@@ -35,8 +35,6 @@
 
 
 
-
-
 // utils/cloudinary.js
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
@@ -49,29 +47,21 @@ cloudinary.config({
   api_secret: process.env.API_SECRET,
 });
 
-// ✅ Upload file from memory buffer
+// Upload buffer (auto-detect image/video)
 export const uploadMedia = async (fileBuffer) => {
-  try {
-    const uploadFromBuffer = (buffer) =>
-      new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { resource_type: "auto" },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        );
-        stream.end(buffer);
-      });
-
-    return await uploadFromBuffer(fileBuffer);
-  } catch (error) {
-    console.error("Cloudinary upload error:", error);
-    throw error;
-  }
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { resource_type: "auto" }, // Handles both images and videos
+      (error, result) => {
+        if (result) resolve(result);
+        else reject(error);
+      }
+    );
+    stream.end(fileBuffer);
+  });
 };
 
-// ✅ Delete image or file from Cloudinary
+// Delete media by public ID
 export const deleteMediaFromCloudinary = async (publicId) => {
   try {
     await cloudinary.uploader.destroy(publicId);
@@ -80,8 +70,8 @@ export const deleteMediaFromCloudinary = async (publicId) => {
   }
 };
 
-// ✅ Delete video file specifically from Cloudinary
-export const deleteVideoFromCLoudinary = async (publicId) => {
+// Specifically delete video
+export const deleteVideoFromCloudinary = async (publicId) => {
   try {
     await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
   } catch (error) {
