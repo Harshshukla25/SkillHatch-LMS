@@ -1,9 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { userLoggedIn, userLoggedOut } from "../authSlice";
 
-const USER_API = "http://localhost:6060/user/";
+const USER_API = `${import.meta.env.VITE_API_BASE_URL}/user`;
 export const authApi = createApi({
-  reducePath: "authApi",
+  reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: USER_API,
     credentials: "include",
@@ -34,7 +34,7 @@ export const authApi = createApi({
     logoutUser:builder.mutation({
             query:()=>({
                 url:"logout",
-                methode:"GET"
+                method:"GET"
             }),
             async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
