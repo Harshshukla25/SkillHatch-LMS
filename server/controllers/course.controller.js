@@ -2,7 +2,7 @@ import { Course } from "../models/course.model.js";
 import { Lecture } from "../models/lecture.model.js";
 import {
   deleteMediaFromCloudinary,
-  deleteVideoFromCLoudinary,
+  deleteVideoFromCloudinary,
   uploadMedia,
 } from "../utils/cloudinary.js";
 
@@ -281,7 +281,7 @@ export const removeLecture = async (req, res) => {
     }
     // delete the lecture from cloudinary as well
     if (lecture.publicId) {
-      await deleteVideoFromCLoudinary(lecture.publicId);
+      await deleteVideoFromCloudinary(lecture.publicId);
     }
 
     //Remove the lecture reference from the associated course
@@ -368,7 +368,7 @@ export const removeCourse = async (req, res) => {
     // Delete all lectures and their videos from Cloudinary
     for (const lecture of course.lectures) {
       if (lecture.publicId) {
-        await deleteVideoFromCLoudinary(lecture.publicId);
+        await deleteVideoFromCloudinary(lecture.publicId);
       }
       await Lecture.findByIdAndDelete(lecture._id);
     }
