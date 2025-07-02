@@ -19,14 +19,13 @@
 // });
 // export default router;
 
-// routes/upload.js
 import express from "express";
-import upload from "../utils/multer.js";
+import { uploadImage, uploadVideo } from "../utils/multer.js";
 import { uploadMedia } from "../utils/cloudinary.js";
 
 const router = express.Router();
 
-router.post("/upload-video", upload.single("file"), async (req, res) => {
+router.post("/upload-video", uploadVideo.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -57,4 +56,3 @@ router.post("/upload-video", upload.single("file"), async (req, res) => {
 });
 
 export default router;
-
