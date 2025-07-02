@@ -33,7 +33,6 @@
 //     }
 // }
 
-
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
 import streamifier from "streamifier";
@@ -49,9 +48,14 @@ cloudinary.config({
 
 /**
  * ✅ Upload media from buffer (image/video).
- * Automatically detects media type using `resource_type: "auto"`
+ * Automatically detects media type using `resource_type: "auto"`.
+ * Throws if buffer is invalid.
  */
 export const uploadMedia = async (fileBuffer) => {
+  if (!fileBuffer || !(fileBuffer instanceof Buffer)) {
+    throw new Error("Invalid or missing file buffer for upload.");
+  }
+
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       { resource_type: "auto" },

@@ -19,6 +19,45 @@
 // });
 // export default router;
 
+// import express from "express";
+// import { uploadImage, uploadVideo } from "../utils/multer.js";
+// import { uploadMedia } from "../utils/cloudinary.js";
+
+// const router = express.Router();
+
+// router.post("/upload-video", uploadVideo.single("file"), async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "No file uploaded",
+//       });
+//     }
+
+//     const result = await uploadMedia(req.file.buffer); // Buffer to Cloudinary
+
+//     res.status(200).json({
+//       success: true,
+//       message: "File uploaded successfully",
+//       data: {
+//         url: result.secure_url,
+//         public_id: result.public_id,
+//         resource_type: result.resource_type,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Upload error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error uploading file",
+//       error: error.message,
+//     });
+//   }
+// });
+
+// export default router;
+
+
 import express from "express";
 import { uploadImage, uploadVideo } from "../utils/multer.js";
 import { uploadMedia } from "../utils/cloudinary.js";
@@ -27,14 +66,16 @@ const router = express.Router();
 
 router.post("/upload-video", uploadVideo.single("file"), async (req, res) => {
   try {
-    if (!req.file) {
+    // ✅ Check if file and file.buffer exist
+    if (!req.file || !req.file.buffer) {
       return res.status(400).json({
         success: false,
-        message: "No file uploaded",
+        message: "No file uploaded or file buffer is missing",
       });
     }
 
-    const result = await uploadMedia(req.file.buffer); // Buffer to Cloudinary
+    // Upload buffer to Cloudinary
+    const result = await uploadMedia(req.file.buffer);
 
     res.status(200).json({
       success: true,
@@ -50,9 +91,10 @@ router.post("/upload-video", uploadVideo.single("file"), async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error uploading file",
-      error: error.message,
+      error: error.message || "Unknown error",
     });
   }
 });
 
 export default router;
+
