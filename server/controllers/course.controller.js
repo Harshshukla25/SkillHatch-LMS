@@ -136,7 +136,7 @@ export const editCourse = async (req, res) => {
         await deleteMediaFromCloudinary(publicId); // delete old image
       }
       //upload a thumbnail on cloudinary
-      courseThumbnail = await uploadMedia(thumbnail.path);
+      courseThumbnail = await uploadMedia(thumbnail.buffer);
     }
 
     const updateData = {

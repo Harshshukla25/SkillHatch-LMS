@@ -194,6 +194,7 @@ export const courseApi = createApi({
         url: `/${courseId}`,
         method: "PUT",
         body: formData,
+        formData: true,
       }),
       invalidatesTags: ["Refetch_Creator_Course"],
     }),
