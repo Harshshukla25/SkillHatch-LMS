@@ -138,7 +138,7 @@ dotenv.config();
 const app = express();
 
 // ✅ CORS Setup
-const allowedOrigins = ['http://localhost:5173','https://skill-hatch-lms.vercel.app'];
+const allowedOrigins = ['http://localhost:5173','https://skill-hatch-lms.vercel.app','https://skill-hatch-lms-9w56-rho.vercel.app'];
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
