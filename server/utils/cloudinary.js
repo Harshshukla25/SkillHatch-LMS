@@ -34,47 +34,66 @@
 // }
 
 
-
-// utils/cloudinary.js
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
+import streamifier from "streamifier";
+
 dotenv.config();
 
-// Cloudinary config
+// ✅ Cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
 });
 
-// Upload buffer (auto-detect image/video)
+/**
+ * ✅ Upload media from buffer (image/video).
+ * Automatically detects media type using `resource_type: "auto"`
+ */
 export const uploadMedia = async (fileBuffer) => {
   return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { resource_type: "auto" }, // Handles both images and videos
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { resource_type: "auto" },
       (error, result) => {
-        if (result) resolve(result);
-        else reject(error);
+        if (error) {
+          console.error("Cloudinary upload error:", error);
+          reject(error);
+        } else {
+          resolve(result);
+        }
       }
     );
-    stream.end(fileBuffer);
+    streamifier.createReadStream(fileBuffer).pipe(uploadStream);
   });
 };
 
-// Delete media by public ID
+/**
+ * 🧹 Delete any media (image by default)
+ */
 export const deleteMediaFromCloudinary = async (publicId) => {
   try {
-    await cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: "image",
+    });
+    return result;
   } catch (error) {
-    console.error("Delete image error:", error);
+    console.error("Cloudinary delete image error:", error);
+    throw error;
   }
 };
 
-// Specifically delete video
+/**
+ * 🧹 Delete video media specifically
+ */
 export const deleteVideoFromCloudinary = async (publicId) => {
   try {
-    await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: "video",
+    });
+    return result;
   } catch (error) {
-    console.error("Delete video error:", error);
+    console.error("Cloudinary delete video error:", error);
+    throw error;
   }
 };
