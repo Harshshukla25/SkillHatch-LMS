@@ -134,31 +134,78 @@ export const getUserProfile = async (req, res) => {
     });
   }
 };
+// export const updateProfile = async (req, res) => {
+//   try {
+//     {
+//       /*const userId=req.id;*/
+//     }
+//     const userId = req.user._id;
+//     const { name } = req.body;
+//     const profilePhoto = req.file;
+//     const user = await User.findById(userId).select("-password");
+//     if (!user) {
+//       return res.status(404).json({
+//         message: "User not found",
+//         success: false,
+//       });
+//     }
+//     const updatedData = { name };
+//     //extract public id of old image from the url if it exists;
+//     if (profilePhoto) {
+//       if (user.photoUrl) {
+//         const publicId = user.photoUrl.split("/").pop().split(".")[0];
+//         await deleteMediaFromCloudinary(publicId);
+//       }
+//       //upload new photo
+//       const cloudResponse = await uploadMedia(profilePhoto.buffer); 
+
+//       updatedData.photoUrl = cloudResponse.secure_url;
+//     }
+
+//     const updatedUser = await User.findByIdAndUpdate(userId, updatedData, {
+//       new: true,
+//     }).select("-password");
+
+//     return res.status(200).json({
+//       success: true,
+//       user: updatedUser,
+//       message: "Profile updated successfully.",
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to update profile",
+//     });
+//   }
+// };
+
+
 export const updateProfile = async (req, res) => {
   try {
-    {
-      /*const userId=req.id;*/
-    }
     const userId = req.user._id;
     const { name } = req.body;
     const profilePhoto = req.file;
+
     const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
         success: false,
+        message: "User not found",
       });
     }
+
     const updatedData = { name };
-    //extract public id of old image from the url if it exists;
+
     if (profilePhoto) {
-      if (user.photoUrl) {
-        const publicId = user.photoUrl.split("/").pop().split(".")[0];
-        await deleteMediaFromCloudinary(publicId);
+      // Delete previous image if we saved the publicId
+      if (user.photoPublicId) {
+        await deleteMediaFromCloudinary(user.photoPublicId);
       }
-      //upload new photo
-      const cloudResponse = await uploadMedia(profilePhoto.path);
+
+      const cloudResponse = await uploadMedia(profilePhoto.buffer); // ✅ use buffer
       updatedData.photoUrl = cloudResponse.secure_url;
+      updatedData.photoPublicId = cloudResponse.public_id;
     }
 
     const updatedUser = await User.findByIdAndUpdate(userId, updatedData, {
@@ -171,7 +218,7 @@ export const updateProfile = async (req, res) => {
       message: "Profile updated successfully.",
     });
   } catch (error) {
-    console.log(error);
+    console.error("Update profile error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to update profile",
