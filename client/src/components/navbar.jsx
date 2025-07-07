@@ -63,7 +63,7 @@ const Navbar = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Avatar className="cursor-pointer hover:ring-2 ring-blue-500 transition-shadow">
+                <Avatar key={user?._id} className="cursor-pointer hover:ring-2 ring-blue-500 transition-shadow">
                   <AvatarImage
                     src={user?.photoUrl || "https://github.com/shadcn.png"}
                     alt="User"
