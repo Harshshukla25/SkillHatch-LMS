@@ -15,33 +15,22 @@
 
 // export default MainLayout
 
-
 import React, { useEffect } from "react";
 import Navbar from "@/components/navbar";
 import { Outlet } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { userLoggedIn } from "@/features/authSlice";
+import { useLoadUserQuery } from "@/features/api/authApi";
 
 const MainLayout = () => {
   const dispatch = useDispatch();
+  const { data, isSuccess } = useLoadUserQuery();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user/profile`, {
-          credentials: "include",
-        });
-        const data = await res.json();
-        if (data.success && data.user) {
-          dispatch(userLoggedIn({ user: data.user }));
-        }
-      } catch (err) {
-        console.log("User not logged in");
-      }
-    };
-
-    fetchProfile();
-  }, [dispatch]);
+    if (isSuccess && data?.user) {
+      // Optional: Already handled in onQueryStarted of loadUser
+      console.log("User loaded from API:", data.user);
+    }
+  }, [isSuccess, data]);
 
   return (
     <div className="flex flex-col min-h-screen">
